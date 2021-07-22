@@ -7,6 +7,9 @@ pygame.font.init()
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+
+MAX_STRIKES = 5
 
 TIME_FONT = pygame.font.SysFont("Arial", 40)
 
@@ -19,6 +22,9 @@ def redraw_window(win, board, play_time, strikes):
     time_text = TIME_FONT.render(time_str, 1, BLACK)
     win.blit(time_text, (900 - time_text.get_width() -
              5, 950 - time_text.get_height()))
+
+    strikes_text = TIME_FONT.render("X " * strikes, 1, RED)
+    win.blit(strikes_text, (0, 950 - strikes_text.get_height()))
     board.draw()
 
 
@@ -71,16 +77,12 @@ def main():
                 if event.key == pygame.K_RETURN:
                     i, j = board.selected
                     if board.cubes[i][j].temp != 0:
-                        if board.place(board.cubes[i][j].temp):
-                            print("success")
-                        else:
-                            print("wrong")
+                        if not board.place(board.cubes[i][j].temp):
                             strikes += 1
 
             if event.type == pygame.MOUSEBUTTONDOWN:    # when mouse clicks
                 pos = pygame.mouse.get_pos()
                 rowcol = board.get_rowcol(pos)
-                print(rowcol)
 
                 if rowcol:
                     board.select(rowcol[0], rowcol[1])
@@ -90,7 +92,12 @@ def main():
             board.sketch(key)
 
         redraw_window(WIN, board, play_time, strikes)
+        if strikes == MAX_STRIKES:
+            run = False
         pygame.display.update()
+
+        if board.isFinished():
+            print("Game over!")
     pygame.quit()
 
 

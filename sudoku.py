@@ -6,12 +6,17 @@ class Sudoku:
         for i in self.grid:
             print(i)
 
-    def solve(self, rowcol):
+    def getSolvedGrid(self):
+        if self.solve():
+            return self.grid
+        else:
+            raise ValueError("Grid cannot be solved")
+
+    def solve(self, rowcol=(0, 0)):
         row, col = rowcol
         # solve is done
         if row == 9 and col == 0:
             return True
-
         # check if there is already a number in the cell
         if self.grid[row][col] > 0:
             # go to next cell
@@ -30,15 +35,15 @@ class Sudoku:
 
     def nextCell(self, row, col):
         if col == 8:
-            return [row + 1, 0]
+            return (row + 1, 0)
         else:
-            return [row, col + 1]
+            return (row, col + 1)
 
     def prevCell(self, row, col):
         if col == 0:
-            return [row - 1, 8]
+            return (row - 1, 8)
         else:
-            return [row, col - 1]
+            return (row, col - 1)
 
     def isValid(self, row, col, val):
         # check if value is valid in row

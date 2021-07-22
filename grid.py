@@ -8,16 +8,16 @@ class Grid:
 
     def __init__(self, win, grid, width, height):
         self.win = win
-        self.grid = grid
         self.width = width
         self.height = height
-        self.rows = len(self.grid)
-        self.cols = len(self.grid[0])
+        self.rows = len(grid)
+        self.cols = len(grid[0])
         self.cubes = [[Cube(grid[i][j], i, j, width // 9, height // 9)
                       for j in range(self.cols)] for i in range(self.rows)]
-        self.model = None
+        # self.model = None
         self.selected = None
-        self.s = Sudoku(grid)
+        s = Sudoku(grid)
+        self.solution = s.getSolvedGrid()
 
     def draw(self):
         # Draw gridlines
@@ -38,23 +38,16 @@ class Grid:
             for j in range(self.cols):
                 self.cubes[i][j].draw(self.win)
 
-    def update_model(self):
-        self.model = [[self.cubes[i][j].value for j in range(
-            self.cols)] for i in range(self.rows)]
-
     def place(self, val):
         row, col = self.selected
         if self.cubes[row][col].value == 0:
             self.cubes[row][col].set(val)
-            self.update_model()
 
-            print(self.model)
-            if self.s.isValid(row, col, val) and self.s.solve(self.model):
+            if val == self.solution[row][col]:
                 return True
             else:
                 self.cubes[row][col].set(0)
                 self.cubes[row][col].set_temp(0)
-                self.update_model()
                 return False
 
     def sketch(self, val):
@@ -65,7 +58,7 @@ class Grid:
         # reset selects for all cubes
         for i in range(self.rows):
             for j in range(self.rows):
-                self.cubes[i][i].selected = False
+                self.cubes[i][j].selected = False
 
         self.cubes[row][col].selected = True
         self.selected = (row, col)
@@ -83,3 +76,11 @@ class Grid:
         row, col = self.selected
         if self.cubes[row][col] == 0:
             self.cubes[row][col].set_temp(0)
+
+    def isFinished(self):
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.cubes[i][j].value == 0:
+                    return False
+
+        return True
