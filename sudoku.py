@@ -6,7 +6,8 @@ class Sudoku:
         for i in self.grid:
             print(i)
 
-    def solve(self, row=0, col=0):
+    def solve(self, rowcol):
+        row, col = rowcol
         # solve is done
         if row == 9 and col == 0:
             return True
@@ -14,16 +15,14 @@ class Sudoku:
         # check if there is already a number in the cell
         if self.grid[row][col] > 0:
             # go to next cell
-            nextRow, nextCol = self.nextCell(row, col)
-            return self.solve(nextRow, nextCol)
+            return self.solve(self.nextCell(row, col))
 
         for i in range(1, 10):
             if self.isValid(row, col, i):
                 self.grid[row][col] = i
 
                 # check for next possibility with next column
-                nextRow, nextCol = self.nextCell(row, col)
-                if self.solve(nextRow, nextCol):
+                if self.solve(self.nextCell(row, col)):
                     return True
             # removing the assigned number since our assumption was wrong
             self.grid[row][col] = 0
@@ -31,15 +30,15 @@ class Sudoku:
 
     def nextCell(self, row, col):
         if col == 8:
-            return [row+1, 0]
+            return [row + 1, 0]
         else:
-            return [row, col+1]
+            return [row, col + 1]
 
     def prevCell(self, row, col):
         if col == 0:
-            return [row-1, 8]
+            return [row - 1, 8]
         else:
-            return [row, col-1]
+            return [row, col - 1]
 
     def isValid(self, row, col, val):
         # check if value is valid in row
